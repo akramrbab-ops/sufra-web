@@ -1,0 +1,65 @@
+:root {
+  --bg-base: #0b0b0a;
+  --bg-surface: #1a1a19;
+  --bg-raised: #2c2c2a;
+  --bg-inverse: #ffffff;
+  --bg-translucent: rgba(26, 26, 25, 0.78);
+  --text-primary: #ffffff;
+  --text-secondary: #b5b3ae;
+  --text-tertiary: #8b8a86;
+  --text-inverse: #0b0b0a;
+  --amber: #e8b36a;
+  --amber-deep: #b7791f;
+  --amber-tint: rgba(232, 179, 106, 0.16);
+  --success: #7ed3a4;
+  --success-tint: rgba(126, 211, 164, 0.16);
+  --danger: #f07167;
+  --danger-tint: rgba(240, 113, 103, 0.14);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --glass: rgba(255, 255, 255, 0.14);
+  --overlay-dark: rgba(11, 11, 10, 0.55);
+  --scrim: rgba(0, 0, 0, 0.6);
+
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 20px;
+  --r-xl: 24px;
+  --r-2xl: 28px;
+  --r-pill: 999px;
+
+  --s-4: 4px;
+  --s-8: 8px;
+  --s-12: 12px;
+  --s-16: 16px;
+  --s-20: 20px;
+  --s-24: 24px;
+  --s-32: 32px;
+  --s-40: 40px;
+
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+  --font: 'Geist Sans', 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --safe-top: max(env(safe-area-inset-top), 0px);
+  --safe-bottom: max(env(safe-area-inset-bottom), 0px);
+}
+
+/* Type scale */
+.t-display { font-size: 38px; line-height: 44px; font-weight: 500; letter-spacing: -0.03em; }
+.t-h1 { font-size: 30px; line-height: 36px; font-weight: 500; letter-spacing: -0.025em; }
+.t-h2 { font-size: 22px; line-height: 28px; font-weight: 500; letter-spacing: -0.02em; }
+.t-h3 { font-size: 18px; line-height: 24px; font-weight: 500; letter-spacing: -0.01em; }
+.t-body-l { font-size: 16px; line-height: 22px; font-weight: 400; }
+.t-body { font-size: 15px; line-height: 21px; font-weight: 400; }
+.t-body-s { font-size: 14px; line-height: 20px; font-weight: 400; }
+.t-label-l { font-size: 16px; line-height: 20px; font-weight: 500; }
+.t-label { font-size: 14px; line-height: 18px; font-weight: 500; }
+.t-caption { font-size: 12px; line-height: 16px; font-weight: 500; }
+.t-micro { font-size: 11px; line-height: 14px; font-weight: 500; }
+
+.c-primary { color: var(--text-primary); }
+.c-secondary { color: var(--text-secondary); }
+.c-tertiary { color: var(--text-tertiary); }
+.c-amber { color: var(--amber); }
+.c-success { color: var(--success); }
+.c-danger { color: var(--danger); }
