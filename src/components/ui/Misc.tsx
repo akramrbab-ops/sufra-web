@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, type MotionStyle } from 'framer-motion'
 import { ArrowLeft, CheckCircle2, ChevronRight, Info } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Review } from '@/data/restaurants'
 import { useStore } from '@/store'
@@ -9,8 +9,19 @@ import { Tag } from './Chip'
 
 export function TopBar({ title, right, overlay, onBack }: { title?: string; right?: ReactNode; overlay?: boolean; onBack?: () => void }) {
   const nav = useNavigate()
+  const ref = useRef<HTMLElement>(null)
+  const [solid, setSolid] = useState(false)
+  useEffect(() => {
+    if (!overlay) return
+    const scroller = ref.current?.closest('.screen')
+    if (!scroller) return
+    const onScroll = () => setSolid(scroller.scrollTop > 180)
+    onScroll()
+    scroller.addEventListener('scroll', onScroll, { passive: true })
+    return () => scroller.removeEventListener('scroll', onScroll)
+  }, [overlay])
   return (
-    <header className={`topbar ${overlay ? 'overlay' : ''}`}>
+    <header ref={ref} className={`topbar ${overlay ? 'overlay' : ''} ${solid ? 'solid' : ''}`}>
       <IconButton label="Back" variant={overlay ? 'glass' : 'surface'} onClick={onBack ?? (() => nav(-1))}>
         <ArrowLeft size={20} strokeWidth={1.6} />
       </IconButton>

@@ -231,7 +231,7 @@ export function Results() {
           </motion.div>
         )}
       </div>
-      <motion.div initial={{ y: 100, x: '-50%' }} animate={{ y: 0, x: '-50%' }} transition={{ type: 'spring', stiffness: 300, damping: 26, delay: 0.25 }} style={{ position: 'absolute', bottom: 'calc(40px + var(--safe-bottom))', left: '50%', zIndex: 30 }}>
+      <motion.div initial={{ y: 100, x: '-50%' }} animate={{ y: 0, x: '-50%' }} transition={{ type: 'spring', stiffness: 300, damping: 26, delay: 0.25 }} style={{ position: 'fixed', bottom: 'calc(40px + var(--safe-bottom))', left: '50%', zIndex: 30 }}>
         <Button size="md" leading={<MapIcon size={18} strokeWidth={1.6} />} onClick={() => nav('/map')} style={{ boxShadow: '0 8px 24px rgba(0,0,0,.45)' }}>{t('explore.map')}</Button>
       </motion.div>
       <FiltersSheet open={filters} onClose={() => setFilters(false)} />
@@ -304,7 +304,7 @@ export function Offers() {
           {list.map(r => (
             <Item key={r.id} className="surface stack gap-12" style={{ padding: 12 }}>
               <CardRow r={r} ctx="offerpage" meta={`${r.cuisine} · ${r.area}`} />
-              <div className="hscroll" style={{ gap: 8, marginInline: -12, paddingInline: 12 }}>
+              <div className="hscroll" style={{ gap: 8, marginInline: -12, paddingInline: 12, scrollPaddingInline: 12 }}>
                 {Object.entries(r.slots).filter(([, d]) => d > 0).map(([time, d]) => (
                   <TimeSlot key={time} time={time} discount={d} onClick={() => { startDraft({ restaurantId: r.id, time }); nav('/book/details') }} />
                 ))}
