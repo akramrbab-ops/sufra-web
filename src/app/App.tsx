@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { HashRouter, Navigate, Route, Routes, useLocation, useNavigationType, type Location } from 'react-router-dom'
 import { BottomNav, TAB_PATHS } from '@/components/ui/BottomNav'
 import { Toasts } from '@/components/ui/Misc'
+import { PayPrompt } from '@/screens/features/Features'
 import { TransitionContext, type TransitionCtx, type TransitionKind } from './Screen'
 import { routes } from './routes'
 
@@ -65,6 +66,7 @@ function Shell() {
         <AnimatePresence>{showNav && <BottomNav key="nav" />}</AnimatePresence>
         <div id="overlay-root" />
         <Toasts />
+        <PayPrompt />
         <div className="home-indicator" />
       </div>
     </div>

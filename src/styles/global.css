@@ -277,3 +277,10 @@ a { color: var(--amber); text-decoration: none; }
 .chat-bubble { max-width: 78%; padding: 10px 14px; border-radius: 18px; font-size: 15px; line-height: 21px; }
 .chat-bubble.me { align-self: flex-end; background: var(--bg-inverse); color: var(--text-inverse); border-end-end-radius: 6px; }
 .chat-bubble.bot { align-self: flex-start; background: var(--bg-surface); border-end-start-radius: 6px; }
+
+/* ---------- New features ---------- */
+.tag.award { background: linear-gradient(135deg, rgba(232,179,106,.28), rgba(183,121,31,.22)); color: #F3D6A8; border: 1px solid rgba(232,179,106,.35); gap: 5px; }
+.festival-banner { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 132px; padding: 18px; border-radius: 28px; overflow: hidden; }
+.push { position: absolute; top: calc(var(--status-h) + 6px); inset-inline: 10px; z-index: 210; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 26px; background: rgba(44,44,42,.94); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--border-subtle); box-shadow: 0 16px 40px rgba(0,0,0,.55); cursor: pointer; }
+.card-large .content .tag.award { margin-bottom: 8px; }
+.tag.award.icon-only { padding: 0; width: 28px; justify-content: center; }

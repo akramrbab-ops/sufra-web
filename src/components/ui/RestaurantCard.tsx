@@ -6,6 +6,7 @@ import { useStore } from '@/store'
 import { t } from '@/i18n'
 import { Rating } from './Rating'
 import { Tag } from './Chip'
+import { AwardBadge } from './AwardBadge'
 
 export function SaveButton({ id, variant = 'glass' }: { id: string; variant?: 'glass' | 'ghost' }) {
   const on = useStore(s => s.favourites.includes(id))
@@ -60,6 +61,7 @@ export function CardLarge({ r, ctx }: { r: Restaurant; ctx: string }) {
         {off > 0 && <Tag tone="dark"><span className="c-amber">-{off}%</span></Tag>}
       </span>
       <div className="content">
+        <AwardBadge id={r.id} compact />
         <div className="t-h1 ellipsis">{r.name}</div>
         <div className="t-body-s c-secondary ellipsis">{r.area} · {r.distanceKm} km · SAR {r.priceAvg} avg</div>
       </div>
@@ -80,6 +82,7 @@ export function CardRow({ r, ctx, meta }: { r: Restaurant; ctx: string; meta?: s
         <span className="row gap-8" style={{ marginTop: 2 }}>
           <Rating value={r.rating} count={r.reviewsCount} />
           {off > 0 && <Tag tone="amber">-{off}%</Tag>}
+          <AwardBadge id={r.id} iconOnly />
         </span>
       </div>
       <SaveButton id={r.id} variant="ghost" />

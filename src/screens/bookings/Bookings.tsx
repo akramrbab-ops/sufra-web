@@ -17,6 +17,10 @@ import { img } from '@/data/images'
 import { whenLabel } from '@/lib/date'
 import { useStore } from '@/store'
 import { t } from '@/i18n'
+import { FESTIVAL, setMenuById } from '@/data/extras'
+import { CardIcon, cardLabel } from '@/screens/booking/Booking'
+import { Toggle } from '@/components/ui/Controls'
+import { Gift, Leaf, UtensilsCrossed } from 'lucide-react'
 
 export function Bookings() {
   const nav = useNavigate()
@@ -80,6 +84,9 @@ export function BookingDetail() {
         )}
         <InfoRow icon={<CalendarDays size={20} strokeWidth={1.6} />} label={t('bookings.dateTime')} value={whenLabel(b.date, b.time)} />
         <InfoRow icon={<Users size={20} strokeWidth={1.6} />} label={t('bookings.guestsLabel')} value={`${b.guests} people${b.occasion && b.occasion !== 'None' ? ` · ${b.occasion}` : ''}`} />
+        {b.setMenuId && setMenuById(b.setMenuId) && <InfoRow icon={<UtensilsCrossed size={20} strokeWidth={1.6} />} label="Set menu" value={`${setMenuById(b.setMenuId)!.name} · SAR ${setMenuById(b.setMenuId)!.price} per guest`} />}
+        {b.festival && <InfoRow icon={<Sparkles size={20} strokeWidth={1.6} />} label={FESTIVAL.name} value={`-${FESTIVAL.discount}% on the food bill`} />}
+        {b.dietary && <InfoRow icon={<Leaf size={20} strokeWidth={1.6} />} label="Dietary notes shared" value={b.dietary} />}
         {b.deposit > 0 && <InfoRow icon={<CreditCard size={20} strokeWidth={1.6} />} label={t('bookings.depositPaid')} value={`SAR ${b.deposit} · ${b.paidWith}`} />}
         {b.status === 'cancelled' && <span className="t-body-s c-tertiary">{b.deposit ? t('bookings.cancelBody', { n: b.deposit }) : t('bookings.cancelFree')}</span>}
       </motion.div>
@@ -132,9 +139,17 @@ export function Bill() {
   const [mine, setMine] = useState<string[]>([])
   const [share, setShare] = useState<number | null>(null)
   const [done, setDone] = useState<number | null>(null)
+  const cards = useStore(s => s.cards)
+  const defaultCard = useStore(s => s.defaultCard)
+  const gifts = useStore(s => s.giftCards)
+  const [method, setMethod] = useState(defaultCard)
+  const [methodOpen, setMethodOpen] = useState(false)
+  const [useGift, setUseGift] = useState(false)
   const items = useMemo(() => {
     if (!b) return []
     const r = byId(b.restaurantId)!
+    const sm = setMenuById(b.setMenuId)
+    if (sm) return [{ id: sm.id, name: sm.name, desc: '', price: sm.price, qty: b.guests }, { id: 'drinks', name: 'Soft drinks', desc: '', price: 18, qty: b.guests }]
     const all = r.menu.flatMap(s => s.items)
     return all.slice(0, 5).map((x, i) => ({ ...x, qty: i === 0 ? Math.max(1, Math.round(b.guests / 2)) : 1 }))
   }, [b])
@@ -146,7 +161,11 @@ export function Bill() {
   const tipAmt = Math.round((subtotal * tip) / 100)
   const total = Math.max(0, subtotal - discount + vat + tipAmt - b.deposit)
   const itemsShare = mine.length ? Math.round(items.filter(x => mine.includes(x.id)).reduce((a, x) => a + x.price * x.qty, 0) * (total / Math.max(1, subtotal))) : 0
-  const pay = share ?? total
+  const giftBal = gifts.reduce((a, g) => a + g.balance, 0)
+  const before = share ?? total
+  const giftUsed = useGift ? Math.min(giftBal, before) : 0
+  const pay = before - giftUsed
+  const card = cards.find(c => c.id === method) ?? cards[0]
   if (done !== null) {
     return (
       <Screen scroll={false}>
@@ -182,6 +201,19 @@ export function Bill() {
         </Item>
         <Item><span className="t-h3">{t('bill.tip')}</span></Item>
         <Item className="row gap-8">{TIPS.map(x => <Chip key={x} selected={tip === x} onClick={() => setTip(x)}>{x ? `${x}%` : t('bill.none')}</Chip>)}</Item>
+        <Item style={{ marginTop: 6 }}><span className="t-h3">Pay with</span></Item>
+        <Item>
+          <motion.button whileTap={{ scale: 0.98 }} onClick={() => setMethodOpen(true)} className="row gap-14 surface" style={{ width: '100%', padding: '14px 16px', borderRadius: 24 }}>
+            <CardIcon c={card} /><span className="t-label-l grow" style={{ textAlign: 'start' }}>{cardLabel(card)}</span><span className="t-label c-amber">Change</span>
+          </motion.button>
+        </Item>
+        {giftBal > 0 && (
+          <Item className="list-item surface" style={{ padding: '8px 16px' }}>
+            <span className="lead" style={{ background: 'var(--amber-tint)', color: 'var(--amber)' }}><Gift size={18} /></span>
+            <span className="stack grow"><span className="t-label-l">Use gift card balance</span><span className="t-caption c-tertiary">SAR {giftBal} available{giftUsed ? ` · SAR ${giftUsed} applied` : ''}</span></span>
+            <Toggle on={useGift} onChange={setUseGift} label="Use gift card" />
+          </Item>
+        )}
         {share !== null && (
           <Item className="row between surface" style={{ padding: '14px 16px', background: 'var(--amber-tint)' }}>
             <span className="t-label-l">{t('bill.yourShare')}</span>
@@ -193,6 +225,16 @@ export function Bill() {
         <Button variant="secondary" onClick={() => setSplit(true)}>{t('bill.split')}</Button>
         <Button className="grow" onClick={() => setDone(payBill(b.id, pay))}>{t('bill.pay', { n: pay })}</Button>
       </div>
+      <Sheet open={methodOpen} onClose={() => setMethodOpen(false)}>
+        <div className="stack gap-10">
+          <span className="t-h2">Pay with</span>
+          {cards.map(c => (
+            <motion.button key={c.id} whileTap={{ scale: 0.98 }} onClick={() => { setMethod(c.id); setMethodOpen(false) }} className="row gap-14" style={{ width: '100%', padding: '14px 16px', borderRadius: 24, background: 'var(--bg-raised)', boxShadow: method === c.id ? 'inset 0 0 0 1.5px var(--amber)' : 'none' }}>
+              <CardIcon c={c} /><span className="t-label-l grow" style={{ textAlign: 'start' }}>{cardLabel(c)}</span><Radio on={method === c.id} />
+            </motion.button>
+          ))}
+        </div>
+      </Sheet>
       <Sheet open={split} onClose={() => setSplit(false)}>
         <div className="stack gap-16">
           <span className="t-h2">{t('bill.split')}</span>

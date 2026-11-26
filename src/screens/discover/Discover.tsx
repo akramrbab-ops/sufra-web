@@ -19,6 +19,7 @@ import { useStore } from '@/store'
 import { activeCount, applyFilters, useFilters } from '@/store/filters'
 import { t } from '@/i18n'
 import { Wordmark } from '@/screens/onboarding/Onboarding'
+import { AwardsBanner, FestivalBanner } from '@/screens/features/Features'
 
 function BookingFilterBar({ onDate, onArea }: { onDate: () => void; onArea: () => void }) {
   const s = useStore(st => st.search)
@@ -81,6 +82,7 @@ export function Home() {
             {TIMES.slice(0, 7).map(x => <TimeSlot key={x} time={x} discount={featured.slots[x]} selected={x === search.time} onClick={() => pickSlot(x)} />)}
           </div>
         </div>
+        <FestivalBanner />
         <div className="stack gap-12">
           <SectionHeader title={t('home.nearYou')} action={t('common.seeAll')} onAction={() => { useFilters.getState().set({ sort: 'nearest', q: '' }); nav('/search') }} />
           <div className="hscroll">
@@ -95,6 +97,7 @@ export function Home() {
         </div>
         <div className="stack gap-12">
           <SectionHeader title={t('home.collections')} />
+          <AwardsBanner />
           <div className="hscroll">
             {collections.map(c => (
               <motion.button key={c.id} whileTap={{ scale: 0.97 }} onClick={() => nav(`/collection/${c.id}`, { state: { shared: `col-${c.id}` } })} style={{ position: 'relative', width: 240, height: 150, borderRadius: 24, overflow: 'hidden', textAlign: 'start' }}>

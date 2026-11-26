@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
+import { Leaf, Receipt, Trophy } from 'lucide-react'
 import { Bell, CalendarCheck, ChevronDown, CreditCard, Gift, Globe, Heart, HelpCircle, LogOut, Mail, MessageSquare, Pencil, Percent, Phone, Plus, Send, Settings as SettingsIcon, ShieldCheck, Sparkles, Star, Trash2, User, UserPlus } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -60,6 +61,7 @@ export function Profile() {
         </Item>
         <Item className="surface stack" style={{ padding: '4px 12px' }}>
           <ListItem icon={<CreditCard size={18} strokeWidth={1.6} />} label={t('profile.payment')} onClick={() => nav('/payment-methods')} />
+          <ListItem icon={<Leaf size={18} strokeWidth={1.6} />} label="Dietary preferences" onClick={() => nav('/profile/dietary')} />
           <ListItem icon={<Bell size={18} strokeWidth={1.6} />} label={t('profile.notifications')} onClick={() => nav('/notifications')} />
           <ListItem icon={<SettingsIcon size={18} strokeWidth={1.6} />} label={t('profile.settings')} onClick={() => nav('/settings')} />
           <ListItem icon={<HelpCircle size={18} strokeWidth={1.6} />} label={t('profile.help')} onClick={() => nav('/help')} />
@@ -94,8 +96,11 @@ export function Favourites() {
 }
 
 const NOTIFS = [
+  { group: 'Today', icon: Receipt, accent: true, title: 'Finished at Najd Village?', body: 'Pay your bill in seconds and earn points.', time: 'now', to: '/booking/b1/bill', unread: true },
   { group: 'Today', icon: CalendarCheck, accent: false, title: 'Booking confirmed', body: 'Najd Village, tonight at 7:00 PM for 2 guests.', time: '2m', to: '/booking/b1', unread: true },
   { group: 'Today', icon: Percent, accent: true, title: '-30% tonight at Najd Village', body: 'Book between 7:30 and 9:00 PM to save on the food bill.', time: '1h', to: '/restaurant/najd-village', unread: true },
+  { group: 'Earlier', icon: Sparkles, accent: true, title: 'Sufra Festival starts 1 Dec', body: '-50% on food at 8 restaurants for two weeks.', time: 'Yesterday', to: '/festival' },
+  { group: 'Earlier', icon: Trophy, accent: true, title: 'Sufra Awards 2026 are out', body: 'See this year’s best tables in Riyadh.', time: 'Yesterday', to: '/awards' },
   { group: 'Earlier', icon: Star, accent: false, title: 'How was Beit Mezze?', body: 'Rate your visit and earn 10 points.', time: 'Yesterday', to: '/review/b3' },
   { group: 'Earlier', icon: Sparkles, accent: true, title: 'You reached Gold', body: 'Enjoy double points on weekend brunches.', time: 'Mon', to: '/rewards' },
   { group: 'Earlier', icon: Gift, accent: true, title: 'Welcome gift', body: 'SAR 25 off your first booking with code SUFRA25.', time: '12 Nov', to: '/offers' },

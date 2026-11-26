@@ -7,13 +7,17 @@ export interface Booking {
   id: string; code: string; restaurantId: string; date: string; time: string; guests: number
   seating: string; occasion: string; requests: string; deposit: number; paidWith: string
   status: BookingStatus; reviewed?: boolean; billPaid?: boolean; discount: number
+  setMenuId?: string; dietary?: string; festival?: boolean
 }
 export interface GiftCard { id: string; design: string; amount: number; balance: number; to: string; message: string; code: string }
-export interface Card { id: string; brand: 'Apple Pay' | 'mada' | 'Visa' | 'Mastercard'; last4?: string }
+export interface Card { id: string; brand: 'Apple Pay' | 'Google Pay' | 'mada' | 'Visa' | 'Mastercard'; last4?: string }
 export interface PointsEntry { id: string; label: string; amount: number; date: string }
 export interface Voucher { id: string; value: number; cost: number }
-export interface Draft { restaurantId: string; date: string; time: string; guests: number; seating: string; occasion: string; requests: string; modifyingId?: string }
+export interface Draft { restaurantId: string; date: string; time: string; guests: number; seating: string; occasion: string; requests: string; modifyingId?: string; setMenuId?: string }
 export interface Toast { id: number; text: string; tone?: 'amber' | 'success' | 'default' }
+
+export interface Dietary { diets: string[]; allergies: string[]; notes: string; share: boolean }
+export const dietLabel = (d: Dietary) => (d.share ? [...d.diets, ...d.allergies.map(a => `${a} allergy`), d.notes].filter(Boolean).join(' · ') : '')
 
 const today = toISO(new Date())
 const uid = () => Math.random().toString(36).slice(2, 9)
@@ -22,6 +26,9 @@ const code = () => 'SF-' + Math.floor(10000 + Math.random() * 89999)
 interface State {
   auth: 'new' | 'guest' | 'user'
   user: { name: string; phone: string; email: string; cuisines: string[] }
+  dietary: Dietary
+  festivalAlert: boolean
+  payPromptSeen: boolean
   favourites: string[]
   bookings: Booking[]
   points: number
@@ -39,13 +46,16 @@ interface State {
   signIn: (kind: 'guest' | 'user') => void
   logout: () => void
   updateUser: (u: Partial<State['user']>) => void
+  setDietary: (d: Partial<Dietary>) => void
+  setFestivalAlert: (on: boolean) => void
+  seePayPrompt: () => void
   toggleFav: (id: string) => boolean
   setSearch: (s: Partial<State['search']>) => void
   addRecent: (q: string) => void
   clearRecent: () => void
   startDraft: (d: Partial<Draft> & { restaurantId: string }) => void
   updateDraft: (d: Partial<Draft>) => void
-  confirmDraft: (o: { deposit: number; paidWith: string; discount: number; pointsUsed: number; promo: number }) => Booking
+  confirmDraft: (o: { deposit: number; paidWith: string; discount: number; pointsUsed: number; promo: number; festival?: boolean }) => Booking
   joinWaitlist: (d: Draft) => void
   cancelBooking: (id: string) => void
   markReviewed: (id: string) => void
@@ -71,6 +81,9 @@ const seedBookings = (): Booking[] => [
 const initial = {
   auth: 'new' as const,
   user: { name: 'Ahmed Al-Qahtani', phone: '55 123 4567', email: 'ahmed@email.com', cuisines: ['Saudi', 'Italian', 'Seafood'] },
+  dietary: { diets: [], allergies: ['Nuts'], notes: '', share: true } as Dietary,
+  festivalAlert: false,
+  payPromptSeen: false,
   favourites: ['najd-village', 'hoshi-omakase', 'beit-mezze', 'trattoria-sole', 'prime-cut'],
   bookings: seedBookings(),
   points: 1240,
@@ -83,7 +96,7 @@ const initial = {
   ],
   vouchers: [] as Voucher[],
   giftCards: [{ id: 'g1', design: 'Classic', amount: 250, balance: 180, to: 'Ahmed', message: 'Happy birthday!', code: 'GIFT-7Q2K-91' }],
-  cards: [{ id: 'apple', brand: 'Apple Pay' }, { id: 'mada', brand: 'mada', last4: '4417' }, { id: 'visa', brand: 'Visa', last4: '0092' }] as Card[],
+  cards: [{ id: 'apple', brand: 'Apple Pay' }, { id: 'gpay', brand: 'Google Pay' }, { id: 'mada', brand: 'mada', last4: '4417' }, { id: 'visa', brand: 'Visa', last4: '0092' }] as Card[],
   defaultCard: 'apple',
   prefs: { offers: true, bookings: true, reviews: false },
   recent: ['Hoshi Omakase', 'Brunch in Hittin', 'Kabsa near me'],
@@ -99,6 +112,9 @@ export const useStore = create<State>()(
       signIn: kind => set({ auth: kind }),
       logout: () => set({ auth: 'new' }),
       updateUser: u => set(s => ({ user: { ...s.user, ...u } })),
+      setDietary: d => set(s => ({ dietary: { ...s.dietary, ...d } })),
+      setFestivalAlert: on => set({ festivalAlert: on }),
+      seePayPrompt: () => set({ payPromptSeen: true }),
       toggleFav: id => {
         const has = get().favourites.includes(id)
         set(s => ({ favourites: has ? s.favourites.filter(f => f !== id) : [id, ...s.favourites] }))
@@ -112,14 +128,15 @@ export const useStore = create<State>()(
         set({ draft: { date: s.date, time: s.time, guests: s.guests, seating: 'No preference', occasion: 'None', requests: '', ...d } })
       },
       updateDraft: d => set(s => ({ draft: s.draft ? { ...s.draft, ...d } : s.draft })),
-      confirmDraft: ({ deposit, paidWith, discount, pointsUsed }) => {
+      confirmDraft: ({ deposit, paidWith, discount, pointsUsed, festival }) => {
         const d = get().draft!
+        const diet = dietLabel(get().dietary)
         if (d.modifyingId) {
           let updated!: Booking
-          set(s => ({ bookings: s.bookings.map(b => (b.id === d.modifyingId ? (updated = { ...b, date: d.date, time: d.time, guests: d.guests, seating: d.seating, occasion: d.occasion, requests: d.requests, discount }) : b)), draft: null }))
+          set(s => ({ bookings: s.bookings.map(b => (b.id === d.modifyingId ? (updated = { ...b, date: d.date, time: d.time, guests: d.guests, seating: d.seating, occasion: d.occasion, requests: d.requests, discount, setMenuId: d.setMenuId, festival }) : b)), draft: null }))
           return updated
         }
-        const b: Booking = { id: uid(), code: code(), restaurantId: d.restaurantId, date: d.date, time: d.time, guests: d.guests, seating: d.seating, occasion: d.occasion, requests: d.requests, deposit, paidWith, status: 'upcoming', discount }
+        const b: Booking = { id: uid(), code: code(), restaurantId: d.restaurantId, date: d.date, time: d.time, guests: d.guests, seating: d.seating, occasion: d.occasion, requests: d.requests, deposit, paidWith, status: 'upcoming', discount, setMenuId: d.setMenuId, dietary: diet || undefined, festival }
         set(s => ({
           bookings: [b, ...s.bookings], draft: null, points: s.points - pointsUsed + 20,
           history: [{ id: uid(), label: 'Booking · pending visit', amount: 20, date: 'Today' }, ...(pointsUsed ? [{ id: uid(), label: 'Points used at checkout', amount: -pointsUsed, date: 'Today' }] : []), ...s.history],
@@ -160,7 +177,7 @@ export const useStore = create<State>()(
       resetAll: () => set({ ...initial, bookings: seedBookings() }),
     }),
     {
-      name: 'sufra-store-v1',
+      name: 'sufra-store-v2',
       storage: createJSONStorage(() => {
         const mem = new Map<string, string>()
         const ls = (() => { try { const s = window.localStorage; s.setItem('__t', '1'); s.removeItem('__t'); return s } catch { return null } })()
@@ -171,8 +188,8 @@ export const useStore = create<State>()(
         }
       }),
       partialize: s => {
-        const { toasts, draft, ...rest } = s
-        void toasts; void draft
+        const { toasts, draft, payPromptSeen, ...rest } = s
+        void toasts; void draft; void payPromptSeen
         return rest
       },
     },

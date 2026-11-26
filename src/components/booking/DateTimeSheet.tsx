@@ -65,9 +65,10 @@ interface Props {
   /** when modifying an existing booking */
   modifyingId?: string
   initial?: { date: string; time: string; guests: number }
+  setMenuId?: string
 }
 
-export function DateTimeSheet({ open, onClose, restaurant, modifyingId, initial }: Props) {
+export function DateTimeSheet({ open, onClose, restaurant, modifyingId, initial, setMenuId }: Props) {
   const nav = useNavigate()
   const search = useStore(s => s.search)
   const setSearch = useStore(s => s.setSearch)
@@ -92,7 +93,7 @@ export function DateTimeSheet({ open, onClose, restaurant, modifyingId, initial 
     if (!restaurant) { setSearch({ date, time, guests }); onClose(); return }
     if (full) { setWaitlist(true); return }
     setSearch({ date, time, guests })
-    startDraft({ restaurantId: restaurant.id, date, time, guests, modifyingId })
+    startDraft({ restaurantId: restaurant.id, date, time, guests, modifyingId, setMenuId: setMenuId ?? (modifyingId ? undefined : useStore.getState().draft?.restaurantId === restaurant.id ? useStore.getState().draft?.setMenuId : undefined) })
     if (modifyingId) {
       confirmDraft({ deposit: 0, paidWith: '', discount: Math.max(0, discount), pointsUsed: 0, promo: 0 })
       toast(t('bookings.modifiedToast'), 'success')

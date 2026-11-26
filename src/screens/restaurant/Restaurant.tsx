@@ -14,6 +14,9 @@ import { img } from '@/data/images'
 import { dayLabel } from '@/lib/date'
 import { useStore } from '@/store'
 import { t } from '@/i18n'
+import { FESTIVAL, inFestival, setMenusFor } from '@/data/extras'
+import { AwardBadge } from '@/components/ui/AwardBadge'
+import { SetMenuCard, festivalDays } from '@/screens/features/Features'
 
 type Tab = 'overview' | 'menu' | 'reviews' | 'info'
 
@@ -83,6 +86,13 @@ export function Restaurant() {
   const [tab, setTab] = useState<Tab>((loc.state as { tab?: Tab } | null)?.tab ?? 'overview')
   const [book, setBook] = useState(false)
   const [menuCat, setMenuCat] = useState(0)
+  const startDraft = useStore(s => s.startDraft)
+  const setMenus = setMenusFor(r.id)
+  const fest = inFestival(r.id) && festivalDays().state !== 'over'
+  const menuTabs = [...(setMenus.length ? ['Set menus'] : []), ...r.menu.map(s => s.title)]
+  const [pickedMenu, setPickedMenu] = useState<string | undefined>()
+  const bookSetMenu = (smId: string) => { setPickedMenu(smId); setBook(true) }
+  void startDraft
   const [reviewSort, setReviewSort] = useState('recent')
   const reviews = [...r.reviews].sort((a, b) => (reviewSort === 'high' ? b.score - a.score : reviewSort === 'low' ? a.score - b.score : 0)).filter(x => reviewSort !== 'photos' || x.photos)
   const tabs: [Tab, string][] = [['overview', t('restaurant.overview')], ['menu', t('restaurant.menu')], ['reviews', t('restaurant.reviews')], ['info', t('restaurant.info')]]
@@ -98,7 +108,14 @@ export function Restaurant() {
         className="stack gap-14 pad" style={{ position: 'relative', marginTop: -32, paddingTop: 24, background: 'var(--bg-base)', borderRadius: '32px 32px 0 0', minHeight: 500 }}>
         <h1 className="t-display" style={{ margin: 0 }}>{r.name}</h1>
         <span className="t-body c-secondary">{r.cuisine} · {r.area} · SAR {r.priceAvg} avg</span>
-        <div className="row gap-8 wrap"><Rating value={r.rating} count={r.reviewsCount} />{r.badges.map(b => <Tag key={b}>{b}</Tag>)}{r.pointsMultiplier && <Tag tone="amber">2× points</Tag>}</div>
+        <div className="row gap-8 wrap"><Rating value={r.rating} count={r.reviewsCount} />{r.badges.map(b => <Tag key={b}>{b}</Tag>)}{r.pointsMultiplier && <Tag tone="amber">2× points</Tag>}<AwardBadge id={r.id} /></div>
+        {fest && (
+          <motion.button whileTap={{ scale: 0.98 }} onClick={() => nav('/festival')} className="row gap-12" style={{ padding: '12px 14px 12px 12px', borderRadius: 24, background: 'var(--bg-surface)', border: '1px solid rgba(232,179,106,.35)', textAlign: 'start' }}>
+            <span className="t-label" style={{ width: 40, height: 40, borderRadius: 20, background: 'var(--amber-tint)', color: 'var(--amber)', display: 'grid', placeItems: 'center' }}>-{FESTIVAL.discount}%</span>
+            <span className="stack grow"><span className="t-label-l">Part of {FESTIVAL.name}</span><span className="t-caption c-tertiary">-{FESTIVAL.discount}% on food · 1 – 14 Dec</span></span>
+            <ChevronRight size={18} color="var(--amber)" />
+          </motion.button>
+        )}
         <OfferBanner r={r} onClick={() => setBook(true)} />
         <div className="hscroll" style={{ gap: 8 }}>{tabs.map(([k, l]) => <Chip key={k} selected={tab === k} onClick={() => setTab(k)}>{l}</Chip>)}</div>
         <AnimatePresence mode="wait" initial={false}>
@@ -108,6 +125,12 @@ export function Restaurant() {
                 <p className="t-body c-secondary" style={{ margin: 0 }}>{r.description}</p>
                 <InfoRow icon={<MapPin size={20} strokeWidth={1.6} />} label={t('restaurant.address')} value={r.address} />
                 <InfoRow icon={<Clock size={20} strokeWidth={1.6} />} label={t('restaurant.hours')} value={`${t('common.open')} · ${r.hours}`} />
+                {setMenus.length > 0 && (
+                  <>
+                    <SectionHeader title="Set menus" action={t('common.seeAll')} onAction={() => { setTab('menu'); setMenuCat(0) }} />
+                    <div className="stack gap-10">{setMenus.map(m => <SetMenuCard key={m.id} m={m} onClick={() => bookSetMenu(m.id)} />)}</div>
+                  </>
+                )}
                 <SectionHeader title="Popular dishes" action={t('common.seeAll')} onAction={() => setTab('menu')} />
                 <div className="hscroll">
                   {r.menu.flatMap(s => s.items).filter(x => x.image).slice(0, 5).map(x => (
@@ -123,9 +146,15 @@ export function Restaurant() {
             )}
             {tab === 'menu' && (
               <>
-                <div className="hscroll" style={{ gap: 8 }}>{r.menu.map((s, i) => <Chip key={s.title} selected={i === menuCat} onClick={() => setMenuCat(i)}>{s.title}</Chip>)}</div>
+                <div className="hscroll" style={{ gap: 8 }}>{menuTabs.map((s, i) => <Chip key={s} selected={i === menuCat} onClick={() => setMenuCat(i)}>{s}</Chip>)}</div>
+                {setMenus.length > 0 && menuCat === 0 ? (
+                  <Stagger key="sm" className="stack gap-10">
+                    <Item><span className="t-body-s c-tertiary">Book a table with a set menu and the kitchen prepares it for your arrival. You pay at the restaurant.</span></Item>
+                    {setMenus.map(m => <Item key={m.id}><SetMenuCard m={m} onClick={() => bookSetMenu(m.id)} /></Item>)}
+                  </Stagger>
+                ) : (
                 <Stagger key={menuCat} className="stack">
-                  {r.menu[menuCat].items.map((x, i) => (
+                  {r.menu[menuCat - (setMenus.length ? 1 : 0)].items.map((x, i) => (
                     <Item key={x.id}>
                       {i > 0 && <div className="divider" />}
                       <div className="row gap-16" style={{ padding: '14px 0', alignItems: 'flex-start' }}>
@@ -135,6 +164,7 @@ export function Restaurant() {
                     </Item>
                   ))}
                 </Stagger>
+                )}
               </>
             )}
             {tab === 'reviews' && (
@@ -167,7 +197,7 @@ export function Restaurant() {
         <span className="stack"><span className="t-label-l">{dayLabel(search.date)} · {t('common.guests', { n: search.guests })}</span>{bestOffer(r) > 0 && <span className="t-caption c-amber">{t('restaurant.offersUpTo', { n: `-${bestOffer(r)}%` })}</span>}</span>
         <Button onClick={() => setBook(true)}>{t('restaurant.bookTable')}</Button>
       </motion.div>
-      <DateTimeSheet open={book} onClose={() => setBook(false)} restaurant={r} />
+      <DateTimeSheet open={book} onClose={() => { setBook(false); setPickedMenu(undefined) }} restaurant={r} setMenuId={pickedMenu} />
     </Screen>
   )
 }

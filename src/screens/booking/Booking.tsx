@@ -15,10 +15,14 @@ import { dayLabel, fromISO } from '@/lib/date'
 import { useStore, type Card } from '@/store'
 import { t } from '@/i18n'
 import { AppleLogo } from '@/screens/onboarding/Onboarding'
+import { FESTIVAL, inFestival, setMenuById, setMenusFor } from '@/data/extras'
+import { GoogleLogo, SetMenuCard, isFestivalDate } from '@/screens/features/Features'
+import { dietLabel } from '@/store'
+import { Leaf, UtensilsCrossed } from 'lucide-react'
 
 export function cardLabel(c: Card) { return c.last4 ? `${c.brand} •••• ${c.last4}` : c.brand }
 export function CardIcon({ c }: { c: Card }) {
-  return c.brand === 'Apple Pay' ? <AppleLogo size={22} /> : <CreditCard size={22} strokeWidth={1.6} />
+  return c.brand === 'Apple Pay' ? <AppleLogo size={22} /> : c.brand === 'Google Pay' ? <GoogleLogo size={22} /> : <CreditCard size={22} strokeWidth={1.6} />
 }
 
 export function BookingDetails() {
@@ -29,10 +33,14 @@ export function BookingDetails() {
   const draft = live ?? last.current
   const update = useStore(s => s.updateDraft)
   const user = useStore(s => s.user)
+  const dietary = useStore(s => s.dietary)
   const [edit, setEdit] = useState(false)
   if (!draft) return <Navigate to="/home" replace />
   const r = byId(draft.restaurantId)!
-  const off = r.slots[draft.time] ?? 0
+  const fest = inFestival(r.id) && isFestivalDate(draft.date)
+  const off = fest ? FESTIVAL.discount : r.slots[draft.time] ?? 0
+  const menus = setMenusFor(r.id)
+  const diet = dietLabel(dietary)
   const seatings = [t('booking.noPref'), t('booking.indoor'), t('booking.outdoor'), t('booking.family')]
   const occasions = [t('booking.none'), t('booking.birthday'), t('booking.anniversary'), t('booking.business')]
   return (
@@ -44,15 +52,23 @@ export function BookingDetails() {
           <span className="stack gap-4 grow">
             <span className="t-label-l">{r.name}</span>
             <span className="t-body-s c-secondary">{dayLabel(draft.date)} · {draft.time} PM · {t('common.guests', { n: draft.guests })}</span>
-            {off > 0 && <span><Tag tone="amber">-{off}% on food</Tag></span>}
+            {off > 0 && <span><Tag tone="amber">-{off}% on food{fest ? ` · ${FESTIVAL.name}` : ''}</Tag></span>}
           </span>
           <IconButton size="sm" variant="ghost" label="Edit" onClick={() => setEdit(true)}><Pencil size={18} strokeWidth={1.6} /></IconButton>
         </Item>
+        {menus.length > 0 && (
+          <>
+            <Item className="row between" style={{ marginTop: 8 }}><span className="t-h3">Set menu</span><span className="t-caption c-tertiary">Optional · pay at the restaurant</span></Item>
+            <Item><button className="row gap-12 surface" onClick={() => update({ setMenuId: undefined })} style={{ width: '100%', padding: '14px 16px', borderRadius: 24, textAlign: 'start', boxShadow: !draft.setMenuId ? 'inset 0 0 0 1.5px var(--amber)' : 'none', transition: 'box-shadow .25s' }}><UtensilsCrossed size={20} strokeWidth={1.6} /><span className="t-label-l grow">Order à la carte</span></button></Item>
+            {menus.map(m => <Item key={m.id}><SetMenuCard m={m} guests={draft.guests} selected={draft.setMenuId === m.id} onClick={() => update({ setMenuId: m.id })} /></Item>)}
+          </>
+        )}
         <Item style={{ marginTop: 8 }}><span className="t-h3">{t('booking.seating')}</span></Item>
         <Item className="row wrap gap-8">{seatings.map(s => <Chip key={s} selected={draft.seating === s} onClick={() => update({ seating: s })}>{s}</Chip>)}</Item>
         <Item style={{ marginTop: 8 }}><span className="t-h3">{t('booking.occasion')}</span></Item>
         <Item className="row wrap gap-8">{occasions.map(s => <Chip key={s} selected={draft.occasion === s} onClick={() => update({ occasion: s })}>{s}</Chip>)}</Item>
         <Item style={{ marginTop: 8 }}><TextArea label={t('booking.requests')} value={draft.requests} onChange={v => update({ requests: v })} placeholder={t('booking.requestsPh')} icon={<MessageSquare size={20} strokeWidth={1.6} />} /></Item>
+        <Item><ListItem icon={<Leaf size={18} strokeWidth={1.6} />} label="Dietary preferences" value={diet || 'None shared'} onClick={() => nav('/profile/dietary')} /></Item>
         <Item><ListItem icon={<User size={18} strokeWidth={1.6} />} label={user.name} value={`+966 ${user.phone}`} onClick={() => nav('/profile/edit')} /></Item>
       </Stagger>
       <div className="fixed-cta"><Button block onClick={() => nav('/book/pay')}>{t('common.continue')}</Button></div>
@@ -80,6 +96,8 @@ export function Payment() {
   if (!draft) return <Navigate to="/home" replace />
   const r = byId(draft.restaurantId)!
   const deposit = r.depositPerGuest * draft.guests
+  const fest = inFestival(r.id) && isFestivalDate(draft.date)
+  const sm = setMenuById(draft.setMenuId)
   const promoOff = promoState === 'ok' ? 25 : 0
   const ptsUse = usePts ? Math.min(points - (points % 100), Math.max(0, (deposit - promoOff) * 20), 1000) : 0
   const ptsOff = ptsUse / 20
@@ -89,7 +107,7 @@ export function Payment() {
   const pay = () => {
     setPaying(true)
     setTimeout(() => {
-      const b = confirm({ deposit: due, paidWith: due ? cardLabel(card) : '—', discount: Math.max(0, r.slots[draft.time] ?? 0), pointsUsed: ptsUse, promo: promoOff })
+      const b = confirm({ deposit: due, paidWith: due ? cardLabel(card) : '—', discount: fest ? FESTIVAL.discount : Math.max(0, r.slots[draft.time] ?? 0), pointsUsed: ptsUse, promo: promoOff, festival: fest })
       toast(t('booking.bookedTitle'), 'success')
       nav(`/book/done/${b.id}`, { replace: true })
     }, 900)
@@ -101,6 +119,8 @@ export function Payment() {
         <Item className="surface stack gap-12" style={{ padding: 16 }}>
           <div className="row between"><span className="t-body c-secondary">{t('booking.deposit', { p: r.depositPerGuest, n: t('common.guests', { n: draft.guests }) })}</span><span className="t-label">SAR {deposit}</span></div>
           <div className="row between"><span className="t-body c-secondary">{t('booking.bookingFee')}</span><span className="t-label">{t('common.free')}</span></div>
+          {sm && <div className="row between"><span className="t-body c-secondary">{sm.name} × {draft.guests}</span><span className="t-label c-tertiary">SAR {sm.price * draft.guests} at venue</span></div>}
+          {fest && <div className="row between"><span className="t-body c-secondary">{FESTIVAL.name}</span><span className="t-label c-amber">-{FESTIVAL.discount}% on food</span></div>}
           {promoOff > 0 && <div className="row between"><span className="t-body c-secondary">{t('booking.promo')}</span><span className="t-label c-success">− SAR {promoOff}</span></div>}
           {ptsOff > 0 && <div className="row between"><span className="t-body c-secondary">{t('booking.usePoints', { n: ptsUse })}</span><span className="t-label c-success">{t('booking.pointsValue', { n: ptsOff })}</span></div>}
           <div className="divider" />

@@ -5,6 +5,7 @@ import { GalleryViewer, Restaurant } from '@/screens/restaurant/Restaurant'
 import { BookingDetails, Confirmed, Payment } from '@/screens/booking/Booking'
 import { Bill, BookingDetail, Bookings, ReviewScreen } from '@/screens/bookings/Bookings'
 import { AddCard, Chat, EditProfile, Favourites, Help, Notifications, PaymentMethods, Profile, Settings } from '@/screens/profile/Profile'
+import { Awards, DietaryPrefs, Festival } from '@/screens/features/Features'
 import { BuyGift, GiftWallet, Gifts, PointsHistory, Refer, Rewards } from '@/screens/rewards/Rewards'
 
 export const routes: { path: string; element: ReactElement }[] = [
@@ -44,4 +45,7 @@ export const routes: { path: string; element: ReactElement }[] = [
   { path: '/gifts', element: <Gifts /> },
   { path: '/gifts/buy', element: <BuyGift /> },
   { path: '/gifts/wallet', element: <GiftWallet /> },
+  { path: '/festival', element: <Festival /> },
+  { path: '/awards', element: <Awards /> },
+  { path: '/profile/dietary', element: <DietaryPrefs /> },
 ]
