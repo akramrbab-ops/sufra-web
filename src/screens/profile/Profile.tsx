@@ -83,7 +83,7 @@ export function Favourites() {
         <motion.div layout className="stack gap-12">
           <AnimatePresence initial={false}>
             {favs.map(id => byId(id)).filter(Boolean).map(r => (
-              <motion.div key={r!.id} layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -60, height: 0, marginBottom: -12 }} transition={{ type: 'spring', stiffness: 380, damping: 34 }}>
+              <motion.div key={r!.id} layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -60, height: 0, marginBottom: -12 }} transition={{ type: 'spring', stiffness: 380, damping: 38 }}>
                 <CardRow r={r!} ctx="fav" />
               </motion.div>
             ))}
@@ -298,7 +298,7 @@ export function Chat() {
     <Screen className="pb-bar">
       <TopBar title={t('profile.chat')} />
       <div className="stack gap-8 pad">
-        {msgs.map((m, i) => <motion.div key={i} initial={{ opacity: 0, y: 10, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: 'spring', stiffness: 400, damping: 30 }} className={`chat-bubble ${m.me ? 'me' : 'bot'}`}>{m.text}</motion.div>)}
+        {msgs.map((m, i) => <motion.div key={i} initial={{ opacity: 0, y: 10, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: 'spring', stiffness: 380, damping: 38 }} className={`chat-bubble ${m.me ? 'me' : 'bot'}`}>{m.text}</motion.div>)}
         {typing && <div className="chat-bubble bot row gap-4" style={{ width: 64 }}>{[0, 1, 2].map(i => <motion.span key={i} animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: i * 0.15 }} style={{ width: 6, height: 6, borderRadius: 3, background: 'var(--text-secondary)' }} />)}</div>}
         <div className="row gap-8 wrap" style={{ marginTop: 6 }}>{['I’m running late', 'Refund status', 'My points'].map(q => <button key={q} className="chip" onClick={() => send(q)}>{q}</button>)}</div>
         <div ref={end} />

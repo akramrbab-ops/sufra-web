@@ -163,7 +163,7 @@ export function LocationScreen() {
           <motion.span key={i} style={{ position: 'absolute', left: -60, top: -60, width: 120, height: 120, borderRadius: '50%', border: '1.5px solid var(--amber)' }}
             initial={{ scale: 0.3, opacity: 0.8 }} animate={{ scale: 2.2, opacity: 0 }} transition={{ duration: 2.4, repeat: Infinity, delay: i * 0.8, ease: 'easeOut' }} />
         ))}
-        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 300, damping: 14, delay: 0.2 }}
+        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 300, damping: 18, delay: 0.2 }}
           style={{ position: 'relative', display: 'grid', placeItems: 'center', width: 64, height: 64, marginLeft: -32, marginTop: -32, borderRadius: '50%', background: 'var(--amber)', color: 'var(--text-inverse)', boxShadow: '0 10px 40px rgba(232,179,106,.45)' }}>
           <MapPin size={28} strokeWidth={1.8} />
         </motion.span>

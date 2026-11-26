@@ -90,7 +90,7 @@ export function BookingDetail() {
         {b.deposit > 0 && <InfoRow icon={<CreditCard size={20} strokeWidth={1.6} />} label={t('bookings.depositPaid')} value={`SAR ${b.deposit} · ${b.paidWith}`} />}
         {b.status === 'cancelled' && <span className="t-body-s c-tertiary">{b.deposit ? t('bookings.cancelBody', { n: b.deposit }) : t('bookings.cancelFree')}</span>}
       </motion.div>
-      <motion.div className="fixed-cta stack gap-8" initial={{ y: 100 }} animate={{ y: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.2 }}>
+      <motion.div className="fixed-cta stack gap-8" initial={{ y: 100 }} animate={{ y: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 34, delay: 0.2 }}>
         {(b.status === 'upcoming' || b.status === 'waitlist') && (
           <>
             <div className="row gap-10">
@@ -170,7 +170,7 @@ export function Bill() {
     return (
       <Screen scroll={false}>
         <div className="stack gap-16 pad" style={{ position: 'absolute', inset: 0, justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-          <motion.div initial={{ scale: 0, rotate: -30 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 14 }} style={{ width: 96, height: 96, borderRadius: 48, background: 'var(--success-tint)', display: 'grid', placeItems: 'center' }}>
+          <motion.div initial={{ scale: 0, rotate: -30 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 18 }} style={{ width: 96, height: 96, borderRadius: 48, background: 'var(--success-tint)', display: 'grid', placeItems: 'center' }}>
             <Receipt size={44} color="var(--success)" strokeWidth={1.5} />
           </motion.div>
           <motion.h1 className="t-h1" style={{ margin: 0 }} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>{t('bill.paid')}</motion.h1>
@@ -277,7 +277,7 @@ export function ReviewScreen() {
     return (
       <Screen scroll={false}>
         <div className="stack gap-16 pad" style={{ position: 'absolute', inset: 0, justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-          <div className="row gap-6">{[0, 1, 2, 3, 4].map(i => <motion.span key={i} initial={{ scale: 0, y: 20 }} animate={{ scale: 1, y: 0 }} transition={{ delay: i * 0.08, type: 'spring', stiffness: 400, damping: 12 }}><Star size={34} strokeWidth={1.6} fill={i < overall ? 'var(--amber)' : 'none'} color={i < overall ? 'var(--amber)' : 'var(--text-tertiary)'} /></motion.span>)}</div>
+          <div className="row gap-6">{[0, 1, 2, 3, 4].map(i => <motion.span key={i} initial={{ scale: 0, y: 20 }} animate={{ scale: 1, y: 0 }} transition={{ delay: i * 0.08, type: 'spring', stiffness: 340, damping: 18 }}><Star size={34} strokeWidth={1.6} fill={i < overall ? 'var(--amber)' : 'none'} color={i < overall ? 'var(--amber)' : 'var(--text-tertiary)'} /></motion.span>)}</div>
           <motion.h1 className="t-h1" style={{ margin: 0 }} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>{t('review.thanks')}</motion.h1>
           <motion.p className="t-body c-secondary" style={{ margin: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>{t('review.thanksBody')}</motion.p>
           <Button style={{ marginTop: 12 }} onClick={() => nav('/bookings', { replace: true })}>{t('common.done')}</Button>

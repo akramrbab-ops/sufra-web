@@ -234,7 +234,7 @@ export function Results() {
           </motion.div>
         )}
       </div>
-      <motion.div initial={{ y: 100, x: '-50%' }} animate={{ y: 0, x: '-50%' }} transition={{ type: 'spring', stiffness: 300, damping: 26, delay: 0.25 }} style={{ position: 'fixed', bottom: 'calc(40px + var(--safe-bottom))', left: '50%', zIndex: 30 }}>
+      <motion.div initial={{ y: 100, x: '-50%' }} animate={{ y: 0, x: '-50%' }} transition={{ type: 'spring', stiffness: 300, damping: 34, delay: 0.25 }} style={{ position: 'fixed', bottom: 'calc(40px + var(--safe-bottom))', left: '50%', zIndex: 30 }}>
         <Button size="md" leading={<MapIcon size={18} strokeWidth={1.6} />} onClick={() => nav('/map')} style={{ boxShadow: '0 8px 24px rgba(0,0,0,.45)' }}>{t('explore.map')}</Button>
       </motion.div>
       <FiltersSheet open={filters} onClose={() => setFilters(false)} />
@@ -262,7 +262,7 @@ export function MapView() {
           const off = bestOffer(x)
           return (
             <motion.button key={x.id} className={`map-pin ${on ? 'sel' : ''}`} style={{ left: `${x.map.x + 8}%`, top: `${x.map.y + 14}%`, zIndex: on ? 5 : 3 }}
-              initial={{ scale: 0, y: 10 }} animate={{ scale: on ? 1.12 : 1, y: 0 }} transition={{ type: 'spring', stiffness: 500, damping: 22, delay: 0.2 + i * 0.03 }}
+              initial={{ scale: 0, y: 10 }} animate={{ scale: on ? 1.12 : 1, y: 0 }} transition={{ type: 'spring', stiffness: 380, damping: 38, delay: 0.2 + i * 0.03 }}
               onClick={e => { e.stopPropagation(); setSel(x.id) }}>
               <span className="bubble">{off > 0 ? `-${off}%` : `SAR ${x.priceAvg}`}</span><span className="tail" />
             </motion.button>
@@ -280,7 +280,7 @@ export function MapView() {
         <div style={{ width: '100%', minHeight: 104 }}>
           <AnimatePresence mode="popLayout">
             {r && (
-              <motion.div key={r.id} initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} transition={{ type: 'spring', stiffness: 400, damping: 32 }} style={{ boxShadow: '0 10px 30px rgba(0,0,0,.5)', borderRadius: 24 }}>
+              <motion.div key={r.id} initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} transition={{ type: 'spring', stiffness: 380, damping: 38 }} style={{ boxShadow: '0 10px 30px rgba(0,0,0,.5)', borderRadius: 24 }}>
                 <CardRow r={r} ctx="map" />
               </motion.div>
             )}

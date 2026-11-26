@@ -193,7 +193,7 @@ export function Restaurant() {
           </motion.div>
         </AnimatePresence>
       </motion.div>
-      <motion.div className="book-bar" initial={{ y: 120 }} animate={{ y: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.25 }}>
+      <motion.div className="book-bar" initial={{ y: 120 }} animate={{ y: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 34, delay: 0.25 }}>
         <span className="stack"><span className="t-label-l">{dayLabel(search.date)} · {t('common.guests', { n: search.guests })}</span>{bestOffer(r) > 0 && <span className="t-caption c-amber">{t('restaurant.offersUpTo', { n: `-${bestOffer(r)}%` })}</span>}</span>
         <Button onClick={() => setBook(true)}>{t('restaurant.bookTable')}</Button>
       </motion.div>

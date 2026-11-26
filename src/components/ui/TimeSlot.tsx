@@ -7,7 +7,7 @@ export function TimeSlot({ time, discount, selected, onClick }: { time: string; 
     <motion.button
       whileTap={{ scale: 0.92 }}
       animate={{ scale: selected ? [1, 1.08, 1] : 1 }}
-      transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 38 }}
       className={`slot ${selected ? 'selected' : ''} ${full ? 'full' : ''}`}
       onClick={onClick}
     >

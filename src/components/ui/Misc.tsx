@@ -92,7 +92,7 @@ export function Toasts() {
     <div className="toast-host">
       <AnimatePresence>
         {toasts.map(tt => (
-          <motion.div key={tt.id} className="toast" layout initial={{ y: -30, opacity: 0, scale: 0.95 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: -20, opacity: 0, scale: 0.95 }} transition={{ type: 'spring', stiffness: 420, damping: 30 }}>
+          <motion.div key={tt.id} className="toast" layout initial={{ y: -30, opacity: 0, scale: 0.95 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: -20, opacity: 0, scale: 0.95 }} transition={{ type: 'spring', stiffness: 380, damping: 38 }}>
             {tt.tone === 'success' ? <CheckCircle2 size={18} color="var(--success)" /> : tt.tone === 'amber' ? <CheckCircle2 size={18} color="var(--amber)" /> : <Info size={18} color="var(--text-secondary)" />}
             {tt.text}
           </motion.div>
@@ -103,8 +103,8 @@ export function Toasts() {
 }
 
 export const stagger = {
-  container: { hidden: {}, show: { transition: { staggerChildren: 0.05, delayChildren: 0.05 } } },
-  item: { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 380, damping: 32 } } },
+  container: { hidden: {}, show: { transition: { staggerChildren: 0.04, delayChildren: 0.06 } } },
+  item: { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { y: { type: 'spring' as const, stiffness: 260, damping: 32 }, opacity: { duration: 0.32, ease: [0.22, 1, 0.36, 1] as const } } } },
 }
 
 export function Stagger({ children, className = '', style }: { children: ReactNode; className?: string; style?: MotionStyle }) {

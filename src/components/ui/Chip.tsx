@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { spring } from '@/lib/motion'
 
-const pop = { whileTap: { scale: 0.94 }, transition: { type: 'spring' as const, stiffness: 600, damping: 22 } }
+const pop = { whileTap: { scale: 0.95 }, transition: spring.press }
 
 export function Chip({ selected, onClick, children }: { selected?: boolean; onClick?: () => void; children: ReactNode }) {
   return (
-    <motion.button {...pop} layout="position" animate={{ scale: selected ? [1, 1.06, 1] : 1 }} className={`chip ${selected ? 'selected' : ''}`} onClick={onClick}>
+    <motion.button {...pop} className={`chip ${selected ? 'selected' : ''}`} onClick={onClick}>
       {children}
     </motion.button>
   )

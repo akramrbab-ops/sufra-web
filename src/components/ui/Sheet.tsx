@@ -1,5 +1,6 @@
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 import type { ReactNode } from 'react'
+import { ease, spring } from '@/lib/motion'
 import { createPortal } from 'react-dom'
 
 export function Sheet({ open, onClose, children, height }: { open: boolean; onClose: () => void; children: ReactNode; height?: number | string }) {
@@ -10,15 +11,15 @@ export function Sheet({ open, onClose, children, height }: { open: boolean; onCl
     <AnimatePresence>
       {open && (
         <>
-          <motion.div className="sheet-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} onClick={onClose} />
+          <motion.div className="sheet-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.38, ease: ease.out }} onClick={onClose} />
           <motion.div
             className="sheet"
             role="dialog"
             style={{ height }}
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', stiffness: 380, damping: 38, mass: 0.9 }}
+            exit={{ y: '100%', transition: { duration: 0.34, ease: ease.ios } }}
+            transition={spring.sheet}
             drag="y"
             dragControls={controls}
             dragListener={false}

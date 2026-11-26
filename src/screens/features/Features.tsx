@@ -112,7 +112,7 @@ export function Festival() {
         <motion.div layout className="stack gap-10">
           <AnimatePresence initial={false} mode="popLayout">
             {shown.map(r => (
-              <motion.div key={r.id} layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }} transition={{ type: 'spring', stiffness: 380, damping: 32 }}>
+              <motion.div key={r.id} layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }} transition={{ type: 'spring', stiffness: 380, damping: 38 }}>
                 <CardRow r={r} ctx="festival" meta={`${r.cuisine} · ${r.area}`} />
               </motion.div>
             ))}
@@ -226,7 +226,7 @@ export function PayPrompt() {
   return (
     <AnimatePresence>
       {show && r && target && (
-        <motion.button className="push" initial={{ y: -120, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -120, opacity: 0 }} transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+        <motion.button className="push" initial={{ y: -120, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -120, opacity: 0 }} transition={{ type: 'spring', stiffness: 380, damping: 38 }}
           drag="y" dragConstraints={{ top: 0, bottom: 0 }} onDragEnd={(_, i) => { if (i.offset.y < -30) { setShow(false); see() } }}
           onClick={() => { setShow(false); see(); nav(`/booking/${target.id}/bill`) }}>
           <span style={{ width: 40, height: 40, borderRadius: 12, background: 'var(--amber)', color: 'var(--text-inverse)', display: 'grid', placeItems: 'center', flexShrink: 0 }}><Receipt size={20} /></span>

@@ -1,4 +1,5 @@
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, MotionConfig } from 'framer-motion'
+import { spring } from '@/lib/motion'
 import { useEffect, useMemo, useRef } from 'react'
 import { HashRouter, Navigate, Route, Routes, useLocation, useNavigationType, type Location } from 'react-router-dom'
 import { BottomNav, TAB_PATHS } from '@/components/ui/BottomNav'
@@ -49,6 +50,7 @@ function Shell() {
 
   const showNav = isTab(location.pathname)
   return (
+    <MotionConfig transition={spring.smooth} reducedMotion="user">
     <div className="stage">
       <div className="device">
         <div className="device-notch" />
@@ -70,6 +72,7 @@ function Shell() {
         <div className="home-indicator" />
       </div>
     </div>
+    </MotionConfig>
   )
 }
 

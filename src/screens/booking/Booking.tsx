@@ -189,7 +189,7 @@ export function Confirmed() {
     <Screen className="pb-bar">
       <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 0.2, scale: 1 }} transition={{ duration: 1.2 }} style={{ position: 'absolute', width: 320, height: 320, left: 36, top: -60, borderRadius: '50%', background: 'var(--amber)', filter: 'blur(110px)', pointerEvents: 'none' }} />
       <div className="stack gap-14 pad" style={{ paddingTop: 'calc(var(--status-h) + 38px)', alignItems: 'center', textAlign: 'center', position: 'relative' }}>
-        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 260, damping: 14 }} style={{ width: 84, height: 84, borderRadius: 42, background: 'var(--amber-tint)', display: 'grid', placeItems: 'center' }}>
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 260, damping: 18 }} style={{ width: 84, height: 84, borderRadius: 42, background: 'var(--amber-tint)', display: 'grid', placeItems: 'center' }}>
           <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
             <motion.circle cx="12" cy="12" r="10" {...draw(0.6, 0.15)} />
             <motion.path d="m8 12 3 3 5-6" {...draw(0.4, 0.6)} />
@@ -199,7 +199,7 @@ export function Confirmed() {
         <motion.p className="t-body c-secondary" style={{ margin: 0 }} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
           {t('booking.bookedBody', { r: r.name, when: dayLabel(b.date).toLowerCase(), t: `${b.time} PM` })}
         </motion.p>
-        {show && <motion.div style={{ width: '100%', textAlign: 'start' }} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 26 }}><BookingCard b={b} actions={false} /></motion.div>}
+        {show && <motion.div style={{ width: '100%', textAlign: 'start' }} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 31 }}><BookingCard b={b} actions={false} /></motion.div>}
         <motion.span className="row gap-8 t-label c-amber" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.8, type: 'spring' }}><Sparkles size={18} />{t('booking.pointsAdded', { n: r.pointsMultiplier ? 40 : 20 })}</motion.span>
       </div>
       <div className="fixed-cta stack gap-8">

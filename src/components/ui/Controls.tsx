@@ -3,7 +3,7 @@ import { Check, Minus, Plus } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useId } from 'react'
 
-const spring = { type: 'spring' as const, stiffness: 520, damping: 34 }
+const spring = { type: 'spring', stiffness: 380, damping: 38 }
 
 export function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label?: string }) {
   return (

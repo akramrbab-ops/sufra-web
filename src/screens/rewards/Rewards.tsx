@@ -91,7 +91,7 @@ export function Refer() {
     <Screen className="pb-bar">
       <TopBar title={t('rewards.refer')} />
       <div className="stack gap-16 pad" style={{ alignItems: 'center', textAlign: 'center', paddingTop: 20 }}>
-        <motion.div initial={{ scale: 0.6, rotate: -8 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 14 }} style={{ width: 120, height: 120, borderRadius: 60, background: 'var(--amber-tint)', display: 'grid', placeItems: 'center' }}>
+        <motion.div initial={{ scale: 0.6, rotate: -8 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 18 }} style={{ width: 120, height: 120, borderRadius: 60, background: 'var(--amber-tint)', display: 'grid', placeItems: 'center' }}>
           <Gift size={54} color="var(--amber)" strokeWidth={1.4} />
         </motion.div>
         <h1 className="t-h1" style={{ margin: 0 }}>Give SAR 25, get 250 points</h1>

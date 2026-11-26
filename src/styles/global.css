@@ -284,3 +284,12 @@ a { color: var(--amber); text-decoration: none; }
 .push { position: absolute; top: calc(var(--status-h) + 6px); inset-inline: 10px; z-index: 210; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 26px; background: rgba(44,44,42,.94); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--border-subtle); box-shadow: 0 16px 40px rgba(0,0,0,.55); cursor: pointer; }
 .card-large .content .tag.award { margin-bottom: 8px; }
 .tag.award.icon-only { padding: 0; width: 28px; justify-content: center; }
+
+/* ---------- Motion polish ---------- */
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+.screen { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.hscroll, .screen { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+.btn, .icon-btn, .chip, .pill, .tab, .card-row, .card-mini, .card-large, .list-item { -webkit-tap-highlight-color: transparent; user-select: none; }
+.btn, .icon-btn, .chip { transition-duration: .28s; transition-timing-function: cubic-bezier(.22,1,.36,1); }
+img { -webkit-user-drag: none; }
+@media (prefers-reduced-motion: reduce) { .screen, .hscroll { scroll-behavior: auto; } }

@@ -46,7 +46,7 @@ function Calendar({ value, onChange }: { value: string; onChange: (iso: string) 
               const isToday = d.getTime() === today.getTime()
               return (
                 <motion.button key={i} whileTap={disabled ? undefined : { scale: 0.85 }} className={`cal-day ${disabled ? 'disabled' : ''} ${isSel ? 'selected' : ''} ${isToday && !isSel ? 'today' : ''}`} disabled={disabled} onClick={() => onChange(iso)}>
-                  {isSel && <motion.span layoutId="cal-sel" className="sel-bg" transition={{ type: 'spring', stiffness: 500, damping: 34 }} />}
+                  {isSel && <motion.span layoutId="cal-sel" className="sel-bg" transition={{ type: 'spring', stiffness: 380, damping: 38 }} />}
                   {d.getDate()}
                 </motion.button>
               )
@@ -136,7 +136,7 @@ export function DateTimeSheet({ open, onClose, restaurant, modifyingId, initial,
           </motion.div>
         ) : (
           <motion.div key="wait" className="stack gap-16" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 30 }} transition={{ duration: 0.25 }}>
-            <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 400, damping: 14 }} style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--amber-tint)', display: 'grid', placeItems: 'center' }}>
+            <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 340, damping: 18 }} style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--amber-tint)', display: 'grid', placeItems: 'center' }}>
               <Bell size={28} color="var(--amber)" />
             </motion.span>
             <span className="t-h2">{t('booking.waitlistTitle')}</span>

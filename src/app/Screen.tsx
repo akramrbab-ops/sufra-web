@@ -1,21 +1,28 @@
 import { motion, type Variants } from 'framer-motion'
 import { createContext, useContext, type ReactNode } from 'react'
+import { dur, ease } from '@/lib/motion'
 
 export type TransitionKind = 'push' | 'fade' | 'shared' | 'modal'
 export interface TransitionCtx { kind: TransitionKind; back: boolean }
 export const TransitionContext = createContext<TransitionCtx>({ kind: 'push', back: false })
 
-const ios = [0.32, 0.72, 0, 1] as const
+const P = { duration: dur.page, ease: ease.ios }
+/* push: new page slides over, old page drifts left and dims; shared: soft cross-fade so the photo can fly; modal: rises from the bottom */
 const variants: Variants = {
   initial: ({ kind, back }: TransitionCtx) =>
-    kind === 'push' ? { x: back ? '-28%' : '100%', opacity: 1, zIndex: back ? 1 : 2 }
-    : kind === 'modal' ? { y: back ? 0 : '100%', opacity: back ? 0.6 : 1, zIndex: back ? 1 : 2 }
-    : { opacity: 0, zIndex: 2 },
-  animate: { x: 0, y: 0, opacity: 1, transition: { duration: 0.45, ease: ios } },
+    kind === 'push' ? (back ? { x: '-24%', opacity: 0.7, zIndex: 1, boxShadow: '0 0 0 rgba(0,0,0,0)' } : { x: '100%', opacity: 1, zIndex: 2, boxShadow: '-24px 0 48px rgba(0,0,0,.45)' })
+    : kind === 'modal' ? (back ? { y: 0, scale: 0.96, opacity: 0.7, zIndex: 1 } : { y: '100%', opacity: 1, zIndex: 2 })
+    : kind === 'shared' ? { opacity: 0, zIndex: 2 }
+    : { opacity: 0, scale: 0.985, zIndex: 2 },
+  animate: ({ kind }: TransitionCtx) => ({
+    x: 0, y: 0, scale: 1, opacity: 1,
+    boxShadow: kind === 'push' ? '-24px 0 48px rgba(0,0,0,0)' : undefined,
+    transition: kind === 'push' || kind === 'modal' ? P : kind === 'shared' ? { duration: 0.34, ease: ease.out } : { duration: 0.28, ease: ease.out },
+  }),
   exit: ({ kind, back }: TransitionCtx) =>
-    kind === 'push' ? { x: back ? '100%' : '-28%', opacity: back ? 1 : 0.6, zIndex: back ? 2 : 1, transition: { duration: 0.45, ease: ios } }
-    : kind === 'modal' ? { y: back ? '100%' : 0, opacity: back ? 1 : 0.6, zIndex: back ? 2 : 1, transition: { duration: 0.45, ease: ios } }
-    : { opacity: 0, zIndex: 1, transition: { duration: kind === 'shared' ? 0.35 : 0.25, ease: 'easeOut' } },
+    kind === 'push' ? (back ? { x: '100%', opacity: 1, zIndex: 2, boxShadow: '-24px 0 48px rgba(0,0,0,.45)', transition: P } : { x: '-24%', opacity: 0.7, zIndex: 1, transition: P })
+    : kind === 'modal' ? (back ? { y: '100%', zIndex: 2, transition: P } : { scale: 0.96, opacity: 0.7, zIndex: 1, transition: P })
+    : { opacity: 0, zIndex: 1, transition: { duration: kind === 'shared' ? 0.3 : 0.2, ease: ease.out } },
 }
 
 export function Screen({ children, className = '', scroll = true }: { children: ReactNode; className?: string; scroll?: boolean }) {
